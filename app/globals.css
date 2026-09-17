@@ -1,0 +1,800 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Stack+Sans+Notch:wght@200..700&display=swap');
+
+:root {
+  /* ------------------------------------------------------------
+     DARK MODE — core surface tokens
+     Dark mode is now the app's only/default look (no toggle).
+     Background is a dark, slightly navy-tinted near-black (never
+     pure #000, so cards/shadows/glows have room to read against
+     it). Foreground is a soft off-white (never pure #fff, to avoid
+     harsh glare). Card surfaces get their own dedicated token so
+     every "bg-white" card in the app can become a real, visibly
+     lighter-than-page surface instead of matching the page bg.
+     ------------------------------------------------------------ */
+  --background: #14131F;        /* dark navy-black page bg */
+  --foreground: #EDEBFA;        /* soft off-white headline + body text */
+  --foreground-muted: #A6A2C0;  /* muted lavender-gray secondary/label text */
+
+  --card: #1D1B2E;              /* card surface — visibly lighter than page bg */
+  --card-hover: #242238;        /* hover/active state for interactive cards */
+  --card-border: rgba(255, 255, 255, 0.08); /* subtle hairline card border */
+  --card-border-strong: rgba(255, 255, 255, 0.14);
+
+  /* Primary accent (links, active states, icon accents, hero gradients)
+     Lifted in lightness/saturation vs. the light-mode value so it
+     still pops against the dark background instead of reading muddy. */
+  --accent: #9C8FFF;            /* brightened purple/lavender */
+  --accent-dark: #7C6FEE;       /* previous base value now used as the darker gradient stop */
+  --accent-light: #C3BAFF;      /* lighter stop for accent gradients */
+
+  /* ------------------------------------------------------------
+     Secondary / tertiary palette (Part 1 — Color System Overhaul)
+     Re-tuned for dark backgrounds: same hues, lifted lightness so
+     they stay vivid instead of washing out. Purely additive: expands
+     the "one purple accent everywhere" palette with a real secondary
+     + tertiary hue for visual variety in cards, charts, and depth —
+     without touching the meaning of the existing status colors
+     (emerald/amber/red = pass/warning/fail) or the primary accent
+     (still the brand color). These are free-standing decorative/
+     wayfinding colors, not new semantics.
+     ------------------------------------------------------------ */
+  --secondary: #2DD4CB;         /* brightened teal — cool counterpoint to the purple accent */
+  --secondary-dark: #17A6A0;    /* previous base value, now the darker gradient stop */
+  --secondary-light: #7EE8E1;
+
+  --tertiary: #F0975A;          /* brightened terracotta/gold — deliberately distinct from status-amber (#f59e0b) */
+  --tertiary-dark: #E0793C;     /* previous base value, now the darker gradient stop */
+  --tertiary-light: #F7BF95;
+
+  /* ------------------------------------------------------------
+     Category color-coding system (Part 1)
+     One token trio (base/light/dark) per real category from
+     lib/demoData.js's categoryBreakdown. Consumed via the
+     getCategoryColor() lookup in lib/categoryColors.js — never
+     hardcode these hexes directly in a component. `--category-other`
+     is the fallback for any category not in the real list (e.g. a
+     future 6th category), so the system never breaks on new data.
+     Re-tuned for dark backgrounds: base hues lifted for pop, "light"
+     variants darkened (they're now used as dark tinted surfaces
+     rather than pale washes), "dark" variants used as readable text/
+     line-art tones against dark cards.
+     ------------------------------------------------------------ */
+  --category-food-beverages: #FF9166;
+  --category-food-beverages-light: #3A2A22;
+  --category-food-beverages-dark: #F2734A;
+
+  --category-personal-care: #F088B3;
+  --category-personal-care-light: #3A2530;
+  --category-personal-care-dark: #E0679B;
+
+  --category-household: #2DD4CB;
+  --category-household-light: #1B3634;
+  --category-household-dark: #17A6A0;
+
+  --category-health-wellness: #7C9BFF;
+  --category-health-wellness-light: #232B45;
+  --category-health-wellness-dark: #5B7FE0;
+
+  --category-other: #A6ACC2;
+  --category-other-light: #2A2C38;
+  --category-other-dark: #8B92A6;
+
+  /* ------------------------------------------------------------
+     Gradient / depth tokens (Part 1)
+     Reusable multi-stop gradients for hero/summary surfaces and
+     bar/chart fills, so later parts apply one consistent technique
+     instead of inventing flat fills or one-off gradients per page.
+     Hero gradient re-tuned to a dark, deep-purple-to-navy sweep
+     instead of a pale lavender wash.
+     ------------------------------------------------------------ */
+  --gradient-hero: linear-gradient(135deg, #201D35 0%, #241F3D 45%, #2A2049 75%, #1B2E33 100%);
+  --gradient-accent-bar: linear-gradient(90deg, var(--accent-dark), var(--accent));
+  --gradient-secondary-bar: linear-gradient(90deg, var(--secondary-dark), var(--secondary));
+  --gradient-tertiary-bar: linear-gradient(90deg, var(--tertiary-dark), var(--tertiary));
+}
+
+.stack-sans {
+  font-family: "Stack Sans Notch";
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-card: var(--card);
+  --color-card-hover: var(--card-hover);
+  --color-card-border: var(--card-border);
+  --color-accent: var(--accent);
+  --color-accent-dark: var(--accent-dark);
+  --color-accent-light: var(--accent-light);
+  --color-secondary: var(--secondary);
+  --color-secondary-dark: var(--secondary-dark);
+  --color-secondary-light: var(--secondary-light);
+  --color-tertiary: var(--tertiary);
+  --color-tertiary-dark: var(--tertiary-dark);
+  --color-tertiary-light: var(--tertiary-light);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Poppins', sans-serif;
+}
+
+@font-face {
+  font-family: 'Cy Grotesk Key';
+  src: url('/fonts/kobuzan-cy-grotesk-grand-dark.otf') format('opentype'),
+       url('/fonts/kobuzan-cy-grotesk-grand-dark.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+.cy-grotesk {
+  font-family: 'Cy Grotesk Key', sans-serif;
+}
+
+.glass-effect{
+ position: absolute;
+ z-index: 0;
+ inset: 0;
+ backdrop-filter: blur(3px);
+ filter: url(#glass-distortion);
+ overflow: hidden;
+ isolation: isolate;
+}
+
+/* ------------------------------------------------------------
+   Pipeline / processing visualization (PipelineStages, Part 2)
+   Pure CSS animations — no JS-driven per-frame updates.
+   ------------------------------------------------------------ */
+
+/* Moving highlight sweeping across the overall-progress fill */
+@keyframes pipelineShimmer {
+  0% { transform: translateX(-60%); }
+  100% { transform: translateX(160%); }
+}
+.pipeline-shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 0%, rgba(255, 255, 255, 0.6) 45%, transparent 90%);
+  animation: pipelineShimmer 1.6s ease-in-out infinite;
+  mix-blend-mode: overlay;
+}
+
+/* Small "energy" orb traveling along the node connector path.
+   Lives inside the SVG (same viewBox coordinate space as the path
+   itself) so it scales correctly at any container width — an
+   absolutely-positioned HTML element using raw path() coordinates
+   would drift out of alignment on any width other than the viewBox's
+   native size, so this stays an SVG-native shape. Hidden by default;
+   only enabled where the browser actually supports CSS motion paths. */
+@keyframes pipelineTravel {
+  from { offset-distance: 0%; }
+  to { offset-distance: 100%; }
+}
+.pipeline-energy-dot {
+  opacity: 0;
+}
+@supports (offset-path: path("M0 0 L1 1")) {
+  .pipeline-energy-dot {
+    opacity: 1;
+    animation: pipelineTravel 3.2s linear infinite;
+  }
+}
+
+/* Scanning-line sweep shown inside the active node's icon when that
+   stage is conceptually a "reading" step (OCR extraction). */
+@keyframes ocrScanSweep {
+  0% { transform: translateY(-120%); opacity: 0; }
+  15% { opacity: 1; }
+  50% { transform: translateY(120%); opacity: 1; }
+  65% { opacity: 0; }
+  100% { transform: translateY(120%); opacity: 0; }
+}
+.ocr-scan-sweep {
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  height: 2px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 0 6px 1px rgba(255, 255, 255, 0.85);
+  animation: ocrScanSweep 1.6s ease-in-out infinite;
+}
+
+/* ------------------------------------------------------------
+   OCR & Attribute Extraction display (OcrExtractionDisplay, Part 3)
+   Pure CSS animations, staggered via inline animation-delay
+   computed from each element's index — no per-frame JS.
+   ------------------------------------------------------------ */
+
+/* One-shot beam sweeping down the abstract label diagram on tab
+   entry, standing in for "the AI is reading this label right now". */
+@keyframes ocrLabelScan {
+  0% { top: -8%; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { top: 104%; opacity: 0; }
+}
+.ocr-label-scan-beam {
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  height: 8%;
+  background: linear-gradient(180deg, transparent, rgba(156, 143, 255, 0.6), transparent);
+  animation: ocrLabelScan 1.1s cubic-bezier(0.4, 0, 0.2, 1) 1 both;
+  pointer-events: none;
+}
+
+/* Numbered zone pin popping in on the label diagram once the scan
+   beam has passed that zone. */
+@keyframes ocrPinPop {
+  0% { transform: translateY(-50%) scale(0); opacity: 0; }
+  60% { transform: translateY(-50%) scale(1.25); opacity: 1; }
+  100% { transform: translateY(-50%) scale(1); opacity: 1; }
+}
+.ocr-pin {
+  animation: ocrPinPop 420ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* Callout line drawing in from a label zone's pin out to its
+   matching attribute panel — same pathLength=100 trick used by the
+   pipeline connector so dash math works regardless of each path's
+   actual measured length. */
+@keyframes ocrCalloutDraw {
+  from { stroke-dashoffset: 100; opacity: 0; }
+  15% { opacity: 1; }
+  to { stroke-dashoffset: 0; opacity: 1; }
+}
+.ocr-callout-line {
+  animation: ocrCalloutDraw 550ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Attribute panel (category) fading/sliding in, staggered per zone. */
+@keyframes ocrCategoryReveal {
+  from { opacity: 0; transform: translateX(8px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.ocr-category-reveal {
+  animation: ocrCategoryReveal 420ms ease-out both;
+}
+
+/* Individual field row appearing within its panel, staggered per
+   field — the "OCR bounding boxes revealing one at a time" beat. */
+@keyframes ocrFieldReveal {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.ocr-field-reveal {
+  animation: ocrFieldReveal 320ms ease-out both;
+}
+
+/* ------------------------------------------------------------
+   Compliance Findings & Violations (FindingsLedger /
+   ViolationsPanel / AllClearPanel, Part 4)
+   ------------------------------------------------------------ */
+
+/* Each ledger row settling in, staggered per finding — same beat as
+   ocrFieldReveal but slightly slower, since rows read one at a time
+   rather than as a grouped panel. */
+@keyframes findingRowReveal {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.finding-row {
+  animation: findingRowReveal 360ms ease-out both;
+}
+
+/* Violation card entrance — a touch heavier than a finding row (more
+   content, more visual weight), staggered per violation. */
+@keyframes violationCardReveal {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.violation-card-reveal {
+  animation: violationCardReveal 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Slow, gentle breathing ring behind the all-clear badge — a calm,
+   resolved-state cue, deliberately much slower/softer than the
+   pipeline's active-node ping so it never reads as an alert. */
+@keyframes allClearPulse {
+  0% { transform: scale(0.85); opacity: 0.45; }
+  70%, 100% { transform: scale(1.55); opacity: 0; }
+}
+.all-clear-ring {
+  animation: allClearPulse 2.6s ease-out infinite;
+}
+
+/* ------------------------------------------------------------
+   Dashboard overview visuals (DemoDashboard, Part 5)
+   ------------------------------------------------------------ */
+
+/* Category Breakdown bar fill — animates width in on mount via the
+   same two-frame RAF trick used by ComplianceSummaryStrip (Part 4);
+   this is just the CSS half of that pattern. */
+.dashboard-bar-fill {
+  transition: width 700ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Recent Scans row entrance — same "settle in" beat as Part 4's
+   findingRowReveal, reused under its own class name since this list
+   is conceptually distinct content, staggered per row inline. */
+.dashboard-scan-row {
+  animation: findingRowReveal 360ms ease-out both;
+}
+
+/* MetricCard mini radial ring behind each icon chip. */
+.dashboard-metric-ring-fill {
+  transition: stroke-dashoffset 900ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ------------------------------------------------------------
+   Entities / Risk Overview — risk ladder (Part 6)
+   ------------------------------------------------------------ */
+
+/* Marker settle-in on the risk spectrum track — same beat family as
+   violationCardReveal, reused per-marker rather than per-card. */
+@keyframes riskPinReveal {
+  from { opacity: 0; transform: translateY(6px) translateX(-50%); }
+  to { opacity: 1; transform: translateY(0) translateX(-50%); }
+}
+.risk-pin-reveal {
+  animation: riskPinReveal 380ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* High Risk marker's pulsing alert ring — deliberately faster/tighter
+   than allClearPulse's calm breathing ring, since this is the one
+   marker meant to read as "look here", not "all clear". */
+@keyframes riskAlertPulse {
+  0% { transform: scale(0.9); opacity: 0.55; }
+  70%, 100% { transform: scale(2.1); opacity: 0; }
+}
+.risk-alert-pulse {
+  animation: riskAlertPulse 1.7s ease-out infinite;
+}
+/* ------------------------------------------------------------
+   Seller Verification — compliance activity timeline (Part 7)
+   ------------------------------------------------------------ */
+
+/* Recent Compliance Activity row settling in — same rail+card
+   timeline language as DemoRewards' redemption history below, reused
+   under its own class name since this is conceptually distinct
+   content (compliance filings, not reward redemptions), the same way
+   .dashboard-scan-row reuses findingRowReveal above. */
+.compliance-timeline-row {
+  animation: rewardTimelineRowReveal 380ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ------------------------------------------------------------
+   Rewards — balance hero, tier progress, history timeline,
+   redeem/code-PIN success moments (DemoRewards, Part 7)
+   ------------------------------------------------------------ */
+
+/* Soft breathing glow behind the balance coin badge — same calm,
+   slow pulse family as allClearPulse (Part 4), but a filled glow
+   rather than an expanding ring since this is a steady-state hero
+   element, not a one-shot resolution cue. */
+@keyframes rewardCoinGlowPulse {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50% { opacity: 0.55; transform: scale(1.08); }
+}
+.reward-coin-glow {
+  animation: rewardCoinGlowPulse 2.8s ease-in-out infinite;
+  filter: blur(7px);
+}
+
+/* Shared width-fill transition for the balance's next-tier bar and
+   each gift card's afford-progress bar — same two-frame RAF gating
+   pattern as the Dashboard's category bars (Part 5). */
+.reward-tier-fill {
+  transition: width 700ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Redemption history timeline row settling in, staggered per entry —
+   each row is a full DemoCard (not a plain text line), so this is
+   given the same weightier "card" easing family as violationCardReveal
+   and riskPinReveal (cubic-bezier(0.16,1,0.3,1)) rather than the
+   lighter plain-ease-out family used by simpler text rows like
+   findingRowReveal/ocrFieldReveal — those two easing families are the
+   established split between "card-weight" and "row-weight" reveals
+   elsewhere in the app, and this follows the card one. */
+@keyframes rewardTimelineRowReveal {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.reward-timeline-row {
+  animation: rewardTimelineRowReveal 380ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Shared "success icon" entrance pop — introduced here for the
+   redemption-success checkmark, and reused as-is (Part 8 cohesion
+   pass) by Check Compliance's purchase-success badge, since both are
+   the same visual event (a circular emerald icon badge confirming a
+   completed Meta-Token transaction) and had been given two different
+   treatments — one animated, one static — before this pass. Same
+   bouncy entrance as the OCR diagram's pin pop (Part 3). */
+@keyframes successIconPop {
+  0% { transform: scale(0.5); opacity: 0; }
+  60% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.success-icon-pop {
+  animation: successIconPop 480ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* Small confetti-style particle burst behind the success checkmark —
+   pure CSS, no new dependency. Each dot is placed via the --angle
+   custom property set inline per-particle, so a single keyframe
+   drives all eight directions. */
+@keyframes rewardConfettiFly {
+  0% { transform: translate(-50%, -50%) rotate(var(--angle)) translateX(0) scale(1); opacity: 1; }
+  100% { transform: translate(-50%, -50%) rotate(var(--angle)) translateX(34px) scale(0); opacity: 0; }
+}
+.reward-confetti-dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--accent);
+  animation: rewardConfettiFly 650ms ease-out both;
+}
+.reward-confetti-dot:nth-child(3n) { background: #10b981; }
+.reward-confetti-dot:nth-child(3n + 1) { background: #f59e0b; }
+
+/* Code / PIN panel reveal in the redemption code modal — a gentle
+   settle-in so the two secrets (code, then PIN) appear as a small
+   sequence rather than popping in statically together. */
+@keyframes rewardCodePanelReveal {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.reward-code-panel-reveal {
+  animation: rewardCodePanelReveal 380ms ease-out both;
+}
+
+/* ------------------------------------------------------------
+   Color System Overhaul (Part 1) — reusable gradient/depth
+   utilities. Flat single-color fills across the app (progress
+   bars, card backgrounds) can adopt these instead of inventing
+   one-off gradients per page. Purely additive utility classes —
+   nothing existing references these yet, so no page behavior
+   changes until a later part opts a specific element in.
+   ------------------------------------------------------------ */
+
+/* Subtle multi-stop gradient background for hero/summary surfaces,
+   replacing a flat --background fill where more depth is wanted. */
+.hero-gradient-bg {
+  background-image: var(--gradient-hero);
+}
+
+/* Bar/chart fill gradients — three ready-made hues (accent /
+   secondary / tertiary) so a chart with multiple series can use
+   real gradient fills instead of flat color per series. */
+.bar-fill-accent {
+  background-image: var(--gradient-accent-bar);
+}
+.bar-fill-secondary {
+  background-image: var(--gradient-secondary-bar);
+}
+.bar-fill-tertiary {
+  background-image: var(--gradient-tertiary-bar);
+}
+
+/* Category-driven bar/chart fill: the consumer sets the
+   `--category-color` / `--category-color-dark` custom properties
+   (from getCategoryColor() in lib/categoryColors.js) on the element,
+   and this class turns them into a gradient. Falls back to the
+   accent gradient if those properties are never set. */
+.bar-fill-category {
+  background-image: linear-gradient(
+    90deg,
+    var(--category-color-dark, var(--accent-dark)),
+    var(--category-color, var(--accent))
+  );
+}
+
+/* Soft colored card tint + left-border accent, driven the same way
+   via `--category-color`. Intended for DemoCard's optional
+   `accentColor` prop (see app/demo/DemoUI.jsx) so category-tinted
+   cards stay token-driven rather than hardcoded per page. */
+.card-accent-tint {
+  border-left-width: 4px;
+  border-left-color: var(--category-color, var(--accent));
+  background-color: color-mix(in srgb, var(--category-color, var(--accent)) 12%, var(--card));
+}
+
+/* ------------------------------------------------------------
+   PRODUCTS TABLE — row-level category tint (Bug 2 fix)
+   Deliberately a separate class from .card-accent-tint above, not
+   a re-tune of it — that class is also used by Entities' single
+   rows and other one-off accented cards, where a 12%/4px accent
+   reads fine in isolation. Stacked down 18 adjacent Products rows
+   across 5 different hues, the same recipe reads as a loud, uneven
+   rainbow: partly because 12% of very different base hues doesn't
+   land at the same *perceived* intensity for every hue. This
+   variant applies one identical, much lighter formula (opacity +
+   border width) to every category, so hue is the only thing that
+   still varies row-to-row — not five independently-loud tints.
+   ------------------------------------------------------------ */
+.row-category-tint {
+  border-left-width: 3px;
+  border-left-color: color-mix(in srgb, var(--category-color, var(--accent)) 65%, transparent);
+  background-color: color-mix(in srgb, var(--category-color, var(--accent)) 5%, transparent);
+}
+.row-category-tint:hover {
+  background-color: color-mix(in srgb, var(--category-color, var(--accent)) 9%, transparent);
+}
+
+/* Bug 3 fix — the one legitimate case for STATUS- rather than
+   CATEGORY-based row tinting: the single non-compliant row needs to
+   visually interrupt the scroll instead of blending into the
+   category-tint rainbow above. Deliberately louder than
+   .row-category-tint (this is the one row that should NOT read as
+   "subtle") with a thicker left edge in the status red rather than
+   any category hue, plus an inset ring so it reads as a distinct
+   card, not just a slightly darker row. */
+.row-status-alert {
+  border-left-width: 4px;
+  border-left-color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.09);
+  box-shadow: inset 0 0 0 1px rgba(239, 68, 68, 0.16);
+}
+.row-status-alert:hover {
+  background-color: rgba(239, 68, 68, 0.13);
+}
+
+/* ------------------------------------------------------------
+   PRODUCTS TABLE — sort dropdown contrast fix (Bug 1)
+   Scoped to this one dropdown via a dedicated class (not a global
+   `select`/`option` rule) since other pages' <select> elements are
+   out of scope for this fix. Native <option> elements render via
+   the browser's own popup chrome, which does NOT inherit the
+   closed control's `bg-transparent`/`text-foreground` Tailwind
+   classes — so unhovered options fell back to the browser's light
+   default background while still inheriting this app's light
+   `text-foreground` color, producing light-on-white text on every
+   option except the currently-hovered one (whose background the
+   browser overrides with its own selection highlight). Explicit
+   background+text color on both the closed control and its options
+   fixes contrast in both the closed and open states. */
+.products-sort-select,
+.products-sort-select option {
+  background-color: var(--card);
+  color: var(--foreground);
+}
+
+/* ==============================================================
+   BEAUTY & COLOR PASS — Part 1: Depth / Gradient / Glow system
+   ==============================================================
+   Everything below is purely additive — new tokens and utility
+   classes only. Nothing existing is modified or removed, and
+   nothing in the app references these yet, so no rendered page
+   changes until a later part in this series opts a specific
+   element in. This section gives Parts 2-4 one consistent,
+   reusable vocabulary for elevation, glow, gradient fills, and
+   tinted surfaces instead of each page inventing its own shadow/
+   gradient values.
+   ------------------------------------------------------------
+   1. Elevation tiers  — .elevation-card / -elevated / -floating
+   2. Ambient glows     — .glow-* (status, category, accent)
+   3. Expanded gradients — richer multi-stop hero/button/chart fills
+   4. Warm surface tints — .surface-tint-*
+   ============================================================== */
+
+:root {
+  /* ----- 1. Elevation tiers -----
+     Three deliberately distinct shadow depths so a card, a hero
+     surface, and a modal/floating layer no longer all reach for the
+     same flat `shadow-sm shadow-black/5` regardless of how much
+     visual weight they should carry. Each tier pairs a tight
+     "contact" shadow with a softer, larger ambient shadow (the same
+     two-shadow technique real depth systems use) rather than one
+     single blur value. */
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.30), 0 2px 8px rgba(0, 0, 0, 0.28);
+  --shadow-elevated: 0 2px 6px rgba(0, 0, 0, 0.35), 0 12px 28px rgba(0, 0, 0, 0.40);
+  --shadow-floating: 0 8px 20px rgba(0, 0, 0, 0.45), 0 28px 64px rgba(0, 0, 0, 0.55);
+
+  /* ----- 3. Expanded gradient set -----
+     Richer multi-stop companions to Part 1's original
+     --gradient-hero / bar tokens above — deeper/more saturated
+     variants for surfaces that need to carry more visual weight
+     (a true hero band, a primary CTA, a gauge fill) than a subtle
+     background tint does. */
+
+  /* A more saturated 5-stop companion to --gradient-hero, for hero
+     bands that should read as a deliberate focal surface rather than
+     a barely-there background tint (e.g. a page's single dominant
+     card, not every card on the page). */
+  --gradient-hero-vivid: linear-gradient(
+    135deg,
+    #2a2350 0%,
+    #322760 30%,
+    #3a2a70 58%,
+    #2c3568 82%,
+    #1f4a52 100%
+  );
+
+  /* Primary button fill: a 3-stop diagonal sweep through the accent
+     range (light -> base -> dark) instead of a flat single hue, so
+     primary CTAs have some life to them under a highlight/hover. */
+  --gradient-button-accent: linear-gradient(135deg, var(--accent-light) 0%, var(--accent) 55%, var(--accent-dark) 100%);
+  --gradient-button-secondary: linear-gradient(135deg, var(--secondary-light) 0%, var(--secondary) 55%, var(--secondary-dark) 100%);
+
+  /* Chart/gauge fills: 3-stop versions of the existing bar gradients
+     with a soft highlight in the middle stop, giving ring/bar fills
+     a touch of sheen instead of a flat two-color blend. */
+  --gradient-chart-accent: linear-gradient(90deg, var(--accent-dark) 0%, var(--accent) 55%, var(--accent-light) 100%);
+  --gradient-chart-secondary: linear-gradient(90deg, var(--secondary-dark) 0%, var(--secondary) 55%, var(--secondary-light) 100%);
+  --gradient-chart-tertiary: linear-gradient(90deg, var(--tertiary-dark) 0%, var(--tertiary) 55%, var(--tertiary-light) 100%);
+
+  /* Status-colored gauge/gradient fills — for score rings, progress
+     bars, or gauge arcs that communicate pass/warn/fail, matching
+     the existing emerald/amber/red status vocabulary rather than
+     introducing new hues. */
+  --gradient-status-success: linear-gradient(90deg, #059669 0%, #10b981 55%, #34d399 100%);
+  --gradient-status-warning: linear-gradient(90deg, #b45309 0%, #f59e0b 55%, #fbbf24 100%);
+  --gradient-status-danger: linear-gradient(90deg, #b91c1c 0%, #ef4444 55%, #f87171 100%);
+
+  /* ----- 4. Warm surface tints -----
+     Subtle colored background fills (a couple percent of hue mixed
+     into white) as an alternative to a plain white card, driven by
+     the same secondary/tertiary/category tokens already defined
+     above. Kept intentionally light — these are surfaces meant to
+     hold body content and text, not decorative bands. */
+  --surface-tint-accent: color-mix(in srgb, var(--accent) 12%, var(--card));
+  --surface-tint-secondary: color-mix(in srgb, var(--secondary) 14%, var(--card));
+  --surface-tint-tertiary: color-mix(in srgb, var(--tertiary) 14%, var(--card));
+  --surface-tint-warm: color-mix(in srgb, var(--tertiary-light) 16%, var(--card));
+  --surface-tint-cool: color-mix(in srgb, var(--secondary-light) 16%, var(--card));
+}
+
+/* ----- 1. Elevation tiers as utility classes ----- */
+
+/* Default resting depth for ordinary content cards — a slightly
+   richer version of DemoCard's current inline shadow-sm, expressed
+   as a reusable class so non-DemoCard surfaces (e.g. table rows,
+   custom panels) can match it exactly instead of approximating it. */
+.elevation-card {
+  box-shadow: var(--shadow-card);
+}
+
+/* Raised tier for a page's one or two dominant surfaces — a hero
+   band, a summary/score panel, anything meant to visually sit above
+   the ordinary card layer without going as far as a modal. */
+.elevation-elevated {
+  box-shadow: var(--shadow-elevated);
+}
+
+/* Highest tier — modals, popovers, dropdowns, anything that visually
+   floats above the page content rather than sitting within its flow. */
+.elevation-floating {
+  box-shadow: var(--shadow-floating);
+}
+
+/* ----- 2. Ambient glow utilities -----
+   Soft, blurred colored halos intended to sit behind a key number,
+   an icon chip, or a hero badge — the same "glow" already used
+   ad-hoc in a couple of places (ScoreBadge's ring drop-shadow,
+   .reward-coin-glow) generalized into reusable classes keyed to the
+   app's existing status/accent/category colors instead of one-off
+   inline rgba() values per component. Applied to the element itself
+   (a filled shape) rather than assuming a separate pseudo-element,
+   since every current use case — a badge, an icon chip, a ring — is
+   already a solid shape that can cast its own glow. */
+.glow-accent {
+  box-shadow: 0 0 0 1px rgba(156, 143, 255, 0.16), 0 0 34px 8px rgba(156, 143, 255, 0.45);
+}
+.glow-secondary {
+  box-shadow: 0 0 0 1px rgba(45, 212, 203, 0.16), 0 0 34px 8px rgba(45, 212, 203, 0.42);
+}
+.glow-tertiary {
+  box-shadow: 0 0 0 1px rgba(240, 151, 90, 0.16), 0 0 34px 8px rgba(240, 151, 90, 0.42);
+}
+
+/* Softer accent glow for small circular elements (e.g. a ~56px
+   letter-mark avatar, Seller Verification's identity card). The
+   standard .glow-accent figures (34px blur, 8px spread) are tuned for
+   large hero surfaces — the Rewards balance text and the Dashboard's
+   152px Compliance Overview ring — where that halo reads as a subtle
+   ambient glow. Applied to a much smaller shape, the same absolute
+   blur/spread overwhelms it into a harsh, oversized bright halo
+   instead. Same accent hue, scaled down for that context. */
+.glow-accent-soft {
+  box-shadow: 0 0 0 1px rgba(156, 143, 255, 0.14), 0 0 12px 2px rgba(156, 143, 255, 0.30);
+}
+
+/* Status-colored glows — same emerald/amber/red vocabulary as
+   StatusPill / ComplianceStatusChip, for use behind a pass/warn/fail
+   badge or hero icon rather than only as flat chip backgrounds. */
+.glow-success {
+  box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.18), 0 0 34px 8px rgba(16, 185, 129, 0.42);
+}
+.glow-warning {
+  box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.18), 0 0 34px 8px rgba(245, 158, 11, 0.42);
+}
+.glow-danger {
+  box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.18), 0 0 34px 8px rgba(239, 68, 68, 0.46);
+}
+
+/* Category-driven glow: the consumer sets `--category-color` (from
+   getCategoryColor(), same convention as .bar-fill-category /
+   .card-accent-tint above) and this turns it into a matching ambient
+   glow, so a category icon chip can glow in its own hue without a
+   bespoke class per category. Falls back to the accent glow color if
+   `--category-color` is never set. */
+.glow-category {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--category-color, var(--accent)) 12%, transparent),
+    0 0 28px 6px color-mix(in srgb, var(--category-color, var(--accent)) 38%, transparent);
+}
+
+/* ----- 3. Gradient fills as utility classes -----
+   Class counterparts to the tokens above, matching the naming
+   pattern of the existing .hero-gradient-bg / .bar-fill-* classes
+   further up this file. */
+.hero-gradient-vivid {
+  background-image: var(--gradient-hero-vivid);
+}
+.button-fill-accent {
+  background-image: var(--gradient-button-accent);
+}
+.button-fill-secondary {
+  background-image: var(--gradient-button-secondary);
+}
+.chart-fill-accent {
+  background-image: var(--gradient-chart-accent);
+}
+.chart-fill-secondary {
+  background-image: var(--gradient-chart-secondary);
+}
+.chart-fill-tertiary {
+  background-image: var(--gradient-chart-tertiary);
+}
+.chart-fill-success {
+  background-image: var(--gradient-status-success);
+}
+.chart-fill-warning {
+  background-image: var(--gradient-status-warning);
+}
+.chart-fill-danger {
+  background-image: var(--gradient-status-danger);
+}
+
+/* ----- 4. Warm surface tints as utility classes ----- */
+.surface-tint-accent {
+  background-color: var(--surface-tint-accent);
+}
+.surface-tint-secondary {
+  background-color: var(--surface-tint-secondary);
+}
+.surface-tint-tertiary {
+  background-color: var(--surface-tint-tertiary);
+}
+.surface-tint-warm {
+  background-color: var(--surface-tint-warm);
+}
+.surface-tint-cool {
+  background-color: var(--surface-tint-cool);
+}
+
+/* Category-driven surface tint — same `--category-color` convention
+   as .glow-category / .bar-fill-category, for a card or panel that
+   should read as "belonging to" a category via a whole-surface tint
+   rather than just a left-border accent. */
+.surface-tint-category {
+  background-color: color-mix(in srgb, var(--category-color, var(--accent)) 12%, var(--card));
+}
